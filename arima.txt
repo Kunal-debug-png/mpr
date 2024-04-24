@@ -1,0 +1,21 @@
+# Load the necessary package
+install.packages("forecast")
+library(forecast)
+
+# Load the AirPassengers dataset
+data(AirPassengers)
+
+# Convert the dataset to a time series object (it is already in time series format)
+ts_data <- AirPassengers
+
+# Fit an ARIMA model using auto.arima()
+arima_model <- auto.arima(ts_data)
+
+# Display the model summary
+print(summary(arima_model))
+
+# Forecast the next 12 periods (1 year)
+forecasted <- forecast(arima_model, h = 12)
+
+# Plot the forecast
+plot(forecasted)

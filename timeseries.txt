@@ -1,0 +1,21 @@
+# Load necessary libraries
+library(stats)
+library(forecast)
+
+# Load a sample time series dataset
+data <- AirPassengers  # AirPassengers is a sample dataset in R
+
+# Plot the time series data
+plot(data, main = "Series Plot", ylab = "Passengers", xlab = "Time")
+
+# Perform time series decomposition
+decomposed <- decompose(data)
+
+# Plot the decomposed components (trend, seasonal, and residuals)
+plot(decomposed)
+
+# Plot ACF (Autocorrelation Function)
+acf(data, main = "Autocorrelation Function (ACF)")
+
+# Plot PACF (Partial Autocorrelation Function)
+pacf(data, main = "Partial Autocorrelation Function (PACF)")
