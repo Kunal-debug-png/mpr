@@ -1,0 +1,427 @@
+
+# 1 linear
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import seaborn as sns
+iris = sns.load_dataset('iris')
+X = iris['petal_length']
+Y = iris['petal_width']
+plt.scatter(X, Y)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, random_state=42,
+test_size=0.1)
+from sklearn.linear_model import LinearRegression
+slr_model = LinearRegression()
+X_train, X_test = np.array(X_train).reshape(-1, 1), np.array(X_test).reshape(-1, 1)
+# Train model
+slr_model.fit(X_train, Y_train)
+Y_pred = slr_model.predict(X_test)
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+print(f"Mean Squared Error: {mean_squared_error(Y_test, Y_pred)}")
+print(f"Mean Absolute Error: {mean_absolute_error(Y_test, Y_pred)}")
+plt.scatter(X_train, Y_train, color='red')
+plt.plot(X_test, Y_pred, color='black')
+plt.show()
+
+
+# 2 multiple linear
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import seaborn as sns
+iris = sns.load_dataset('iris')
+iris.drop('species', axis=1, inplace=True)
+X = iris[['sepal_length', 'sepal_width', 'petal_length']]
+Y = iris['petal_width']
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, random_state=42,
+test_size=0.2)
+from sklearn.linear_model import LinearRegression
+mlr = LinearRegression()
+mlr.fit(X_train, Y_train)
+Y_pred = mlr.predict(X_test)
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+print(f"Mean Squared Error: {mean_squared_error(Y_test, Y_pred)}")
+print(f"Mean Absolute Error: {mean_absolute_error(Y_test, Y_pred)}")
+for input_feature in X.columns:
+	plt.scatter(X_train[input_feature], Y_train, color='red', label="Training data")
+	plt.scatter(X_test[input_feature], Y_pred, color='blue', label="Predicted data")
+	plt.title(f"{input_feature} V/S {Y.name}")
+	plt.legend(loc="upper left")
+	plt.show()
+
+
+# 3 logistic
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+import pandas as pd
+import seaborn as sns
+penguins = sns.load_dataset('penguins')
+penguins.dropna(inplace=True)
+penguins.replace("Male", 0, inplace=True)
+penguins.replace("Female", 1, inplace=True)
+X = penguins[['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g']]
+Y = penguins['sex']
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, random_state=42,test_size=0.1)
+from sklearn.linear_model import LogisticRegression
+lr_model = LogisticRegression()
+lr_model.fit(X_train, Y_train)
+Y_pred = lr_model.predict(X_test)
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, roc_auc_score
+# Confusion matrix
+cnf_matrix = confusion_matrix(Y_test, Y_pred)
+sns.heatmap(pd.DataFrame(cnf_matrix), annot=True, cmap="YlGnBu",xticklabels=["Male", "Female"], yticklabels=["Male", "Female"])
+plt.xlabel("Predicted class")
+plt.ylabel("Actual class")
+plt.show()
+print(classification_report(Y_test, Y_pred, target_names=["Male", "Female"]))
+Y_pred_proba = lr_model.predict_proba(X_test)[::, 1]
+fpr, tpr, _ = roc_curve(Y_test, Y_pred_proba)
+auc = roc_auc_score(Y_test, Y_pred_proba)
+plt.plot(fpr, tpr, label=f"R2 score: {auc}")
+plt.show()
+
+
+#4 time series
+time<-read.csv(file.choose(), header=TRUE)
+time
+class(time)
+
+timets<-ts(time$Temp, start = 1981, end = 1990, frequency = 12)
+timets
+class(timets)
+dev.new(width = 8, height = 6)
+plot(timets, main = "Time Series Plot")
+lines(timets)
+
+decomposed <-decompose(timets)
+plot(decomposed)
+
+par(mfrow=c(2,1))
+dev.new(width = 8, height = 6)
+acf(timets, main="Autocorrelation Function")
+pacf(timets, main="Partial Autocorrelation Function")
+
+
+# 5 arima
+#install.packages("forecast")
+#library(forecast)
+
+# Load the dataset
+# data(AirPassengers)
+
+# # Convert the dataset to a time series object
+# passengers_ts <- ts(AirPassengers, frequency = 12)
+
+# # Plot the time series
+# plot(passengers_ts, main = "Airline Passengers")
+
+# # Fit an ARIMA model
+# # We'll use auto.arima() function from the forecast package to automatically select the best ARIMA model
+# library(forecast)
+# arima_model <- auto.arima(passengers_ts)
+
+# # Summary of the ARIMA model
+# summary(arima_model)
+
+# # Plot the forecast
+# forecast_plot <- forecast(arima_model, h = 24)  # Forecast for the next 24 periods
+# plot(forecast_plot, main = "Forecast for Airline Passengers")
+
+
+# 6 spam filter
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, classification_report
+import string
+
+# Sample dataset (replace with your data)
+messages = [
+    ("Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005. Text FA to 87121 to receive entry question(std txt rate)T&C's apply 08452810075over18's"),
+    ("Even my brother is not like to speak with me. They treat me like aids patent."),
+    ("WINNER!! As a valued network customer you have been selected to receivea £900 prize reward!"),
+    ("Had your mobile 11 months or more? U R entitled to Update to the latest colour mobiles with camera for Free!"),
+    ("SIX chances to win CASH! From 100 to 20,000 pounds txt> CSH11 and send to 87575. Cost 150p/day, 6days, 16+ TsandCs apply Reply HL 4 info"),
+    ("Hello, how are you?")
+]
+labels = [1, 0, 1, 1, 1, 0]  # 1 for spam, 0 for not spam
+
+# Text preprocessing
+def preprocess(text):
+    text = text.lower()  # Convert to lowercase
+    text = text.translate(str.maketrans('', '', string.punctuation))  # Remove punctuation
+    return text
+
+# Preprocess messages
+messages_preprocessed = [preprocess(msg) for msg in messages]
+
+# Vectorization
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(messages_preprocessed)
+
+# Splitting data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size=0.2, random_state=42)
+
+# Train Naive Bayes classifier
+clf = MultinomialNB()
+clf.fit(X_train, y_train)
+
+# Predictions
+y_pred = clf.predict(X_test)
+
+# Evaluation
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+
+
+# 7 sentiment analysis
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+
+# Sample dataset (replace with your data)
+reviews = [
+    "This movie is great!",
+    "I hated this film, it was terrible.",
+    "The acting was superb, but the plot was weak.",
+    "I love this movie, it's amazing.",
+    "The worst movie I've ever seen.",
+    "The storyline was intriguing, but the pacing was off."
+]
+labels = ['positive', 'negative', 'neutral', 'positive', 'negative', 'neutral']
+
+# Vectorization
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(reviews)
+
+# Splitting data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size=0.2, random_state=42)
+
+# Train SVM classifier
+clf = SVC(kernel='linear')
+clf.fit(X_train, y_train)
+
+# Predictions
+y_pred = clf.predict(X_test)
+
+# Evaluation
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+
+
+# 8 word cloud
+import matplotlib.pyplot as plt
+
+# Sample text data (replace with your text data)
+text = """
+Python is a high-level programming language. 
+It is easy to learn and powerful. 
+Python is used for web development, data science, artificial intelligence, and more.
+"""
+
+# Preprocess the text (remove punctuation and convert to lowercase)
+text = ''.join([char.lower() if char.isalnum() or char.isspace() else ' ' for char in text])
+
+# Split the text into words
+words = text.split()
+
+# Calculate word frequencies
+word_freq = {}
+for word in words:
+    if word in word_freq:
+        word_freq[word] += 1
+    else:
+        word_freq[word] = 1
+
+# Create lists for words and their frequencies
+word_list = list(word_freq.keys())
+freq_list = list(word_freq.values())
+
+# Plot word frequencies
+plt.figure(figsize=(10, 5))
+plt.bar(word_list, freq_list)
+plt.xlabel('Words')
+plt.ylabel('Frequency')
+plt.title('Word Frequency')
+plt.xticks(rotation=45)
+plt.show()
+
+
+
+# 9 eda
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Step 1: Load the dataset
+iris_df = pd.read_csv('https://raw.githubusercontent.com/uiuc-cse/data-fa14/gh-pages/data/iris.csv')
+
+# Step 2: Explore the dataset
+print("First few rows of the dataset:")
+print(iris_df.head())
+
+print("\nInformation about the dataset:")
+print(iris_df.info())
+
+print("\nSummary statistics of numerical columns:")
+print(iris_df.describe())
+
+# Step 3: Handle missing values (if any) - Not required for Iris dataset as it's a clean dataset
+
+# Step 4: Visualize distributions of numerical variables
+# Histograms
+iris_df.hist(figsize=(10, 8))
+plt.show()
+
+# Box plots
+plt.figure(figsize=(10, 6))
+sns.boxplot(data=iris_df)
+plt.show()
+
+# Step 5: Visualize relationships between variables
+# Scatter plot
+sns.pairplot(iris_df, hue='species')
+plt.show()
+
+# Correlation matrix
+# correlation_matrix = iris_df.corr()
+# sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+# plt.title('Correlation Matrix')
+# plt.show()
+
+# Step 6: Explore categorical variables (if any) - Not required for Iris dataset
+
+# Step 7: Feature engineering - Not required for this demonstration
+
+# Step 8: Summarize findings
+# Example: Mean sepal length for each species
+print("\nMean sepal length for each species:")
+print(iris_df.groupby('species')['sepal_length'].mean())
+
+
+# 10 data visualization with R
+# Step 1: Generate sample data
+
+#install.packages("ggplot2")
+# set.seed(42)  # Set random seed for reproducibility
+# data <- data.frame(
+#   A = runif(100),
+#   B = runif(100),
+#   C = runif(100),
+#   Category = sample(c('X', 'Y', 'Z'), 100, replace=TRUE)
+# )
+# head(data)
+
+# # Step 2: Scatter plot
+# plot(data$A, data$B, main="Scatter plot", xlab="A", ylab="B")
+
+# # Step 3: Line plot
+# plot(data$A, data$B, type="l", main="Line plot", xlab="A", ylab="B")
+
+# # Step 4: Histogram
+# hist(data$C, main="Histogram", xlab="C", ylab="Frequency")
+
+# # Step 5: Box plot
+# boxplot(data[, c("A", "B", "C")], main="Box plot", ylab="Values")
+
+# # Step 6: Violin plot
+# library(ggplot2)
+# ggplot(data, aes(x=Category, y=A, fill=Category)) +
+#   geom_violin() +
+#   labs(title="Violin Plot of A by Category", x="Category", y="Value of A")
+
+# # Step 7: Swarm plot
+# ggplot(data, aes(x=Category, y=B, fill=Category)) +
+#   geom_point(position="jitter", alpha=0.5) +
+#   labs(title="Swarm Plot of B by Category", x="Category", y="Value of B")
+
+# # Step 8: Bar plot
+# barplot(table(data$Category), main="Bar Plot of Category Counts", xlab="Category", ylab="Count")
+
+# # Step 9: Pair plot
+# library(ggplot2)
+# ggplot(data, aes(x=A, y=B, color=Category)) +
+#   geom_point() +
+#   geom_smooth(method="lm", se=FALSE) +
+#   labs(title="Pairplot of Features by Category", x="A", y="B") +
+#   facet_wrap(~Category)
+
+
+# 11 visualization with python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+np.random.seed(42) # Set random seed for reproducibility
+data = pd.DataFrame({
+'A': np.random.rand(100),
+'B': np.random.rand(100),
+'C': np.random.rand(100),
+'Category': np.random.choice(['X', 'Y', 'Z'], 100)
+})
+data.head()
+
+plt.figure(figsize=(8, 6))
+plt.scatter(data['A'], data['B'])
+plt.title('Scatter plot')
+plt.xlabel('A')
+plt.ylabel('B')
+plt.show()
+
+plt.figure(figsize=(8, 6))
+plt.plot(data['A'], data['B'])
+plt.title('Line plot')
+plt.xlabel('A')
+plt.ylabel('B')
+plt.show()
+
+plt.figure(figsize=(8, 6))
+plt.hist(data['C'], bins=20)
+plt.title('Histogram')
+plt.xlabel('C')
+plt.ylabel('Frequency')
+plt.show()
+
+plt.figure(figsize=(8, 6))
+data.boxplot(column=['A', 'B', 'C'])
+plt.title('Box plot')
+plt.ylabel('Values')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.violinplot(x='Category', y='A', data=data)
+plt.title('Violin Plot of A by Category')
+plt.xlabel('Category')
+plt.ylabel('Value of A')
+plt.show()
+
+# 2. Swarm Plot
+plt.figure(figsize=(10, 6))
+sns.swarmplot(x='Category', y='B', data=data)
+plt.title('Swarm Plot of B by Category')
+plt.xlabel('Category')
+plt.ylabel('Value of B')
+plt.show()
+
+
+# 4. Bar Plot
+plt.figure(figsize=(10, 6))
+data['Category'].value_counts().plot(kind='bar')
+plt.title('Bar Plot of Category Counts')
+plt.xlabel('Category')
+plt.ylabel('Count')
+plt.show()
+
+sns.pairplot(data, hue='Category', diag_kind='kde', palette='Set1')
+plt.suptitle('Pairplot of Features by Category', y=1.02)
+plt.show()
